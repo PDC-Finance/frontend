@@ -24,6 +24,9 @@ import { Tab } from '../components/Styles';
 
 const { TabPane } = Tabs;
 
+const MORALIS_APP_ID = process.env.MORALIS_APP_ID
+const MORALIS_SERVER_URL = process.env.MORALIS_SERVER_URL
+
 const application = () => {
 
     const [pdcState, setPDCState] = useState([])
@@ -39,8 +42,8 @@ const application = () => {
     const Web3Api = useMoralisWeb3Api();
 
     Moralis.start({
-        appId:"gzTPVse171cOrai0yDjhUrNgwrLz9h3DPfD34poY",
-        serverUrl:"https://o7qbw6blidxt.usemoralis.com:2053/server"
+        appId:{MORALIS_APP_ID},
+        serverUrl: {MORALIS_SERVER_URL}
       });
 
     // Moralis.settings.setAPIRateLimit({

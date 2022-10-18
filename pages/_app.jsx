@@ -12,6 +12,10 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 
+const MORALIS_APP_ID = process.env.MORALIS_APP_ID
+const MORALIS_SERVER_URL = process.env.MORALIS_SERVER_URL
+
+
 // const { chains, provider, webSocketProvider } = configureChains(
 //   [
 //     chain.mainnet,
@@ -53,7 +57,7 @@ const wagmiClient = createClient({
 function MyApp({ Component, pageProps }) {
   return (
     <Layout>
-      <MoralisProvider appId="gzTPVse171cOrai0yDjhUrNgwrLz9h3DPfD34poY" serverUrl="https://o7qbw6blidxt.usemoralis.com:2053/server">
+      <MoralisProvider appId={MORALIS_APP_ID} serverUrl={MORALIS_SERVER_URL}>
 
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
