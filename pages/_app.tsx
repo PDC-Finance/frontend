@@ -1,19 +1,13 @@
 import '../styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import type { AppProps } from 'next/app';
-import { chain, configureChains, createClient, WagmiConfig, useNetwork, useSwitchNetwork, useConnect } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
-
-import { RainbowKitProvider, getDefaultWallets, connectorsForWallets, Chain } from "@rainbow-me/rainbowkit";
-import { argentWallet, trustWallet, ledgerWallet } from "@rainbow-me/rainbowkit/wallets";
-
-import { publicProvider } from 'wagmi/providers/public';
+import { RainbowKitProvider, getDefaultWallets, Chain } from "@rainbow-me/rainbowkit";
+import { chain, configureChains, createClient, useNetwork, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import Layout from "../components/layout";
+import { useRouter } from "next/router";
 import { MoralisProvider } from "react-moralis";
-import Layout from '../components/layout'
-import { useRouter } from 'next/router';
-import { ethers } from 'ethers';
-declare var window:any;
+
 
 const bscMainnet: Chain = {
   id: 56,
@@ -34,25 +28,7 @@ const bscMainnet: Chain = {
   },
   testnet: false,
 };
-const polygonMainnet: Chain = {
-  id: 137,
-  name: "MATIC",
-  network: "MATIC Mainnet",
-  /*  iconUrl: "https://example.com/icon.svg", */
-  iconBackground: "#fff",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Polygon Matic Token (MATIC)",
-    symbol: "MATIC",
-  },
-  rpcUrls: {
-    default: "https://polygon-rpc.com",
-  },
-  blockExplorers: {
-    default: { name: "SnowTrace", url: "https://polygonscan.com/" },
-  },
-  testnet: false,
-};
+
 const fantomMainnet: Chain = {
   id: 250,
   name: "FTM",
@@ -77,33 +53,22 @@ const { provider, chains, webSocketProvider } = configureChains(
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
-const { wallets } = getDefaultWallets({
-  appName: "PDC Finance",
+const { connectors } = getDefaultWallets({
+  appName: 'PDC Finance',
   chains,
 });
-
-const connectors = connectorsForWallets([
-  ...wallets,
-  {
-    groupName: "Other",
-    wallets: [argentWallet({ chains }), trustWallet({ chains }), ledgerWallet({ chains })],
-  },
-]);
-
 
 const wagmiClient = createClient({
   autoConnect: true,
   connectors,
   provider,
-  webSocketProvider
+  webSocketProvider,
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
- 
+  const { chain, chains } = useNetwork();
   var Moralis_Server_Url:any = '';
   var MORALIS_APP_ID:any = '';
-
-  const { chain, chains } = useNetwork();
   if (chain && chain.id == 80001) {
     Moralis_Server_Url = process.env.NEXT_PUBLIC_MORALIS_TESTNET_API_SERVER_URL;
     MORALIS_APP_ID = process.env.NEXT_PUBLIC_MORALIS_TESTNET_APP_ID;
@@ -112,11 +77,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     MORALIS_APP_ID = process.env.NEXT_PUBLIC_MORALIS_MAINNET_APP_ID;
   }
 
-  //console.log("Moralis_Server_Url:   ", Moralis_Server_Url);
-  //console.log("MORALIS_APP_ID:   ", MORALIS_APP_ID);
-
+  //console.log("Moralis_Server_Url:  ", Moralis_Server_Url);
+  //console.log("MORALIS_APP_ID:  ", MORALIS_APP_ID);
   const router = useRouter();
-  console.log(router.pathname);
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>

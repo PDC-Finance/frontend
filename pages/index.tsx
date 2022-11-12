@@ -1,10 +1,10 @@
-import { NextPage } from 'next'
-import Image from 'next/image';
-import React from 'react'
-import Footer from '../components/footer';
-import Layout from '../components/layout';
+import { NextPage } from "next";
+import Image from "next/image";
+import React from "react";
+import Footer from "../components/footer";
+import Layout from "../components/layout";
 
-const Home:NextPage = () => {
+const Home: NextPage = () => {
   return (
     <>
       <div className="hero min-h-screen">
@@ -13,7 +13,7 @@ const Home:NextPage = () => {
           <div>
             <h1 className="text-5xl font-bold">Post Dated Crypto Payments Made Easy</h1>
             <p className="py-6">
-              Made by <b>Finance Professionals</b> for <b>Finance Professionals</b> to adopt <b>web3.0</b> easily
+              Made by <b>Finance Professionals</b> for <b>Finance Professionals</b> to adopt <b>DeFi</b> easily
             </p>
 
             <button className="btn btn-primary">Get Started</button>
@@ -53,6 +53,6 @@ const Home:NextPage = () => {
       <Footer />
     </>
   );
-}
+};
 
-export default Home
+export default Home;

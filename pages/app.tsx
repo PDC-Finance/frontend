@@ -1,50 +1,68 @@
-import { NextPage } from 'next/types';
-import React, { useEffect, useState } from 'react';
-import { useAccount, useBalance, useContractWrite, usePrepareContractWrite } from "wagmi";
-import {useNetwork } from "wagmi";
-import CreateFantomPDC from "../components/Fantom_Chain/createFANTOMPDC";
-import CreateBnbPDC from "../components/BNB_Chain/createBNBPDC";
-import CreateMumbaiPDC from "../components/Mumbai_Chain/createMUMBAIPDC";
-import ShowPdcList from "../components/showPdcList";
+import React, { useEffect, useState } from "react";
 import { useMoralisQuery } from "react-moralis";
+import { NextPage } from "next/types";
+import Link from "next/link";
 import pdcContractInterface from "../abi/pdc.json";
-import { fetchNftListFromMoralis, fetchTokenBalancesFromMoralis, formatDate, convertDate } from "../utils/web3";
-import CreateBnbPdcContaract from '../components/BNB_Chain/createBnbPdcContract';
-import CreateFantomPdcContaract from '../components/Fantom_Chain/createFantomPdcContract';
-import CreateMumbaiPdcContaract from '../components/Mumbai_Chain/createMumbaiPdcContract';
+import ShowPdcList from "../components/showPdcList";
+import CreateMumbaiPDC from "../components/createMUMBAIPDC";
+import { fetchTokenBalancesFromMoralis } from "../utils/web3";
+import CreateMumbaiPdcContaract from "../components/createMumbaiPdcContract";
+import { useAccount, useBalance, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
+import CreateFantomPdcContract from '../components/fantom_chain/createFantomPdcContract';
+import CreateFantomPdc from '../components/fantom_chain/createFantomPdc';
+import CreateBnbPdcContract from '../components/bnb_chain/createBnbPdcContract';
+import CreateBnbPdc from '../components/bnb_chain/createBnbPdc';
+import Image from "next/image";
 
-const App: NextPage = () => {
- 
+const App = () => {
   const [tabState, setTabState] = useState("1");
   const [isCreatingPDC, setIsCreatingPDC] = useState(false);
-  const [pdcAccountAddress, setPdcAccountAddress] = useState('');
+  const [pdcAccountAddress, setPdcAccountAddress] = useState("");
   const [tokenBalanceList, setTokenBalanceList] = useState([]);
   const [selectedToken, setSelectedToken] = useState("0x92D8AD8dEf363CEbdBEf14A428a23edF2Bfd7F64");
-  const [recipientAddress, setrecipientAddress] = useState('');
-  const [pdcAmount, setPdcAmount] = useState('');
-  const [pdcDateTime, setPdcDateTime] = useState('');
+  const [recipientAddress, setrecipientAddress] = useState("");
+  const [pdcAmount, setPdcAmount] = useState("");
+  const [pdcDateTime, setPdcDateTime] = useState("");
   const [nativeBalance, setNativeBalance] = useState("0");
   const [currentChain, setCurrentChain] = useState<any>(null);
   const { address, isConnected } = useAccount();
+  const [tableName, setTableName] = useState('');
 
   const [isAvailablePDC, setIsAvailablePDC] = useState(false);
   const [pdcList, setPdcList] = useState([]);
- 
+
   const [IsConnected, setIsConnected] = useState(false);
 
-
   const { chain, chains } = useNetwork();
-
-  useEffect(() => { 
-   
-    if (chain != null || chain != 'null') { 
-      
-       setCurrentChain(chain?.id);
-        console.log(currentChain)
+  /* if (chain && chain.id) {
+    setCurrentChain(chain.id);
+      if (chain && chain.id == 80001) {
+        setTableName("PDCCREATED_2");
+      } else if (chain && chain.id == 250) {
+        setTableName("PDCCREATED_FTM");
+      } else if (chain && chain.id == 56) {
+        setTableName("PDCCREATED_BNB");
+      }
+  } */
+  useEffect(() => {
+    if (chain && chain.id && currentChain !== chain.id) {
+      setCurrentChain(chain.id);
+      if (chain && chain.id == 80001) {
+        setTableName("PDCCREATED_2");
+        fetchFromDB();
+      } else if (chain && chain.id == 250) {
+        setTableName("PDCCREATED_FTM");
+        fetchFromDB();
+      } else if (chain && chain.id == 56) {
+        setTableName("PDCCREATED_BNB");
+        fetchFromDB();
+      }
+      return;
     }
-   
-  }, [chain])
-  
+  }, [chain]
+    
+    );
+
   const dateTime = Math.floor(new Date(pdcDateTime).getTime() / 1000);
   const { config } = usePrepareContractWrite({
     addressOrName: pdcAccountAddress,
@@ -52,34 +70,36 @@ const App: NextPage = () => {
     functionName: "withdraw",
     args: [selectedToken],
   });
+
   const { data, isLoading, isSuccess, write } = useContractWrite(config);
   //console.log("data: ", data);
   if (data && data.hash) {
     console.log("withdraw-data:  ", data);
   }
-
- const { fetch } = useMoralisQuery("PDCCREATED_2", (query) => query.equalTo("owner", address?.toLowerCase()), [], { autoFetch: false });
+  if (isSuccess ) {
+    console.log("isSuccess:  ", isSuccess);
+  }
+  console.log('table-name:::::::    ',tableName);
+  const { fetch } = useMoralisQuery('PDCCREATED_2', (query) => query.equalTo("owner", address?.toLowerCase()), [], { autoFetch: false });
   const fetchFromDB = async () => {
     try {
       const results = await fetch();
-      //alert("Successfully retrieved " + results?.length );
-      console.log("fetching from db............");
-      console.log('result:  ',results)
       if (results) {
-        //console.log(JSON.parse(JSON.stringify(results)));
+        console.log('pdc-list:  ',JSON.parse(JSON.stringify(results)));
         const data = JSON.parse(JSON.stringify(results));
         if (data && data.length > 0) {
           setPdcList([]);
           setPdcList(data);
           setIsCreatingPDC(false);
+        } { 
+          setIsAvailablePDC(false);
         }
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    
   };
-
+  
   useEffect(() => {
     if (isConnected) {
       fetchFromDB();
@@ -89,9 +109,6 @@ const App: NextPage = () => {
     }
   }, [isConnected]);
 
-  
- 
-  
   useBalance({
     addressOrName: pdcAccountAddress,
     watch: false,
@@ -100,7 +117,7 @@ const App: NextPage = () => {
         setNativeBalance(data.formatted);
       }
       console.log("native-balance: ", { data, error });
-    }
+    },
   });
   if (!IsConnected) {
     return (
@@ -112,29 +129,38 @@ const App: NextPage = () => {
     );
   }
   if (!isAvailablePDC) {
-    return (
-      <>
+    if (currentChain == 56) {
+      return (
         <div className="w-full h-[90vh] flex justify-center items-center">
-          {/* <button disabled={!write} onClick={() => write?.()} className="bg-purple-500 px-5 py-2 rounded-xl text-white font-bold hover:bg-purple-700">
-            Create PDC Contract
-          </button> */}
-          {currentChain == 56 ? (
-            <CreateBnbPdcContaract
+          <CreateBnbPdcContract
+            address={address}
+            setIsAvailablePDC={setIsAvailablePDC}
+            fetchTokenBalancesFromMoralis={fetchTokenBalancesFromMoralis}
+            setTokenBalanceList={setTokenBalanceList}
+            setPdcAccountAddress={setPdcAccountAddress}
+          />
+        </div>
+      );
+    }
+    else if (currentChain == 250) {
+      return (
+        <>
+          <div className="w-full h-[90vh] flex justify-center items-center">
+            <CreateFantomPdcContract
               address={address}
               setIsAvailablePDC={setIsAvailablePDC}
               fetchTokenBalancesFromMoralis={fetchTokenBalancesFromMoralis}
               setTokenBalanceList={setTokenBalanceList}
               setPdcAccountAddress={setPdcAccountAddress}
             />
-          ) : currentChain == 250 ? (
-            <CreateFantomPdcContaract
-              address={address}
-              setIsAvailablePDC={setIsAvailablePDC}
-              fetchTokenBalancesFromMoralis={fetchTokenBalancesFromMoralis}
-              setTokenBalanceList={setTokenBalanceList}
-              setPdcAccountAddress={setPdcAccountAddress}
-            />
-          ) : currentChain == 80001 ? (
+          </div>
+        </>
+      );
+    }
+    else if (currentChain == 80001) { 
+      return (
+        <>
+          <div className="w-full h-[90vh] flex justify-center items-center">
             <CreateMumbaiPdcContaract
               address={address}
               setIsAvailablePDC={setIsAvailablePDC}
@@ -142,32 +168,29 @@ const App: NextPage = () => {
               setTokenBalanceList={setTokenBalanceList}
               setPdcAccountAddress={setPdcAccountAddress}
             />
-          ) : (
-            <></>
-          )}
-        </div>
-      </>
-    );
+          </div>
+        </>
+      );
+    }
   } else {
     return (
       <div className="mt-20 flex flex-col items-center justify-center">
         <div className="step1 mt-10">
-          <div className="border-2 rounded-lg border-gray-50 p-5">
+          <div className=" rounded-lg  p-5">
             <p>
               PDC smart contract address
-              <a href={"https://mumbai.polygonscan.com/address/" + pdcAccountAddress} target="_blank">
-                <b> {pdcAccountAddress}</b>
-              </a>
+              <Link href={"https://mumbai.polygonscan.com/address/" + pdcAccountAddress}>
+                <a target="_blank">
+                  <b> {pdcAccountAddress}</b>
+                </a>
+              </Link>
             </p>
             <p>
               smart contract balances <small>( Add MATIC and Balace to the above 👆 contract using Metamask )</small>{" "}
             </p>
             <div className="mt-5">
               <div className="my-5">
-                <p>
-                  {currentChain == 56 ? "BNB" : currentChain == "256" ? "FTM" : currentChain == 80001 ? "MATIC" : ""} :{" "}
-                  {parseFloat(nativeBalance)?.toPrecision(4)}
-                </p>
+                <p>MATIC : {parseFloat(nativeBalance)?.toPrecision(4)}</p>
                 {tokenBalanceList.map(function (token: any, index) {
                   return (
                     <p key={index}>
@@ -203,7 +226,7 @@ const App: NextPage = () => {
               {/* <button className="bg-green-500 px-5 py-2 rounded-xl text-white font-bold hover:bg-green-700">Deposit to PDC Contract</button>
               <button className="bg-rose-500 px-5 py-2 rounded-xl text-white font-bold hover:bg-rose-700 ml-5">Withdraw from PDC Contract</button> */}
             </div>
-            <div className="mt-5 w-1/2">
+            <div className="mt-5 w-[55%]">
               <div className="tabs m-0 p-0 tabs-boxed">
                 <a className={"tab " + (tabState == "1" ? "tab-active" : " ")} onClick={() => setTabState("1")}>
                   Make PDC Payment
@@ -272,62 +295,51 @@ const App: NextPage = () => {
               />
             </div>
             <div className="flex justify-center mt-8">
-              {currentChain == 56 ? (
-                <CreateBnbPDC
-                  pdcDateTime={pdcDateTime}
-                  pdcAccountAddress={pdcAccountAddress}
-                  selectedToken={selectedToken}
-                  recipientAddress={recipientAddress}
-                  pdcAmount={pdcAmount}
-                  setTabState={setTabState}
-                  setIsCreatingPDC={setIsCreatingPDC}
-                  fetchFromDB={fetchFromDB}
-                />
-              ) : currentChain == 250 ? (
-                <CreateFantomPDC
-                  pdcDateTime={pdcDateTime}
-                  pdcAccountAddress={pdcAccountAddress}
-                  selectedToken={selectedToken}
-                  recipientAddress={recipientAddress}
-                  pdcAmount={pdcAmount}
-                  setTabState={setTabState}
-                  setIsCreatingPDC={setIsCreatingPDC}
-                  fetchFromDB={fetchFromDB}
-                />
-              ) : currentChain == 80001 ? (
-                <div className="flex flex-col justify-center items-center">
-                <CreateMumbaiPDC
-                  pdcDateTime={pdcDateTime}
-                  pdcAccountAddress={pdcAccountAddress}
-                  selectedToken={selectedToken}
-                  recipientAddress={recipientAddress}
-                  pdcAmount={pdcAmount}
-                  setTabState={setTabState}
-                  setIsCreatingPDC={setIsCreatingPDC}
-                  fetchFromDB={fetchFromDB}
-                />
-              
-                  
-                        <img className="w-48 h-32" src='geloato_logo1.svg' alt='logo'/>
-               
-                </div>
-              ) : (
-                <></>
-              )}
+              <div className="flex flex-col justify-center items-center">
+                {currentChain == 56 ? (
+                  <>
+                    <CreateBnbPdc />
+                    <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
+                  </>
+                ) : currentChain == 250 ? (
+                    <>
+                      <CreateFantomPdc />
+                      <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
+                    </>
+                  ) : currentChain == 80001 ? (
+                    <>
+                        <CreateMumbaiPDC
+                          pdcDateTime={pdcDateTime}
+                          pdcAccountAddress={pdcAccountAddress}
+                          selectedToken={selectedToken}
+                          recipientAddress={recipientAddress}
+                          pdcAmount={pdcAmount}
+                          setTabState={setTabState}
+                          setIsCreatingPDC={setIsCreatingPDC}
+                          fetchFromDB={fetchFromDB}
+                        />
+                        <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
+                    </>
+                ) : <>
+                      <p>Select network from dropdown</p>
+                    </>
+                
+                }
+                
+                
+              </div>
             </div>
           </div>
-        ) : tabState == "2" ? (
+        ) : (
           <div className="tab2">
             <div className="overflow-x-auto mt-10">
               <ShowPdcList pdcList={pdcList} />
             </div>
           </div>
-        ) : (
-          <></>
         )}
       </div>
     );
   }
 };
 
-export default App
+export default App;

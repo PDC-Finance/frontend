@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react'
 
 const Footer = () => {
@@ -57,18 +59,26 @@ const Footer = () => {
             </div>
             <div className="p-2 w-full pt-8 mt-8  text-center">
               <span className="inline-flex">
-                <a className="text-gray-500" href="https://m.youtube.com/channel/UCKLeOMLR1An2SDoOtCftmWA" target="_blank">
-                  <img height={32} width={32} src="youtube.svg" alt="" />
-                </a>
-                <a className="ml-4" href="https://twitter.com/pdcfin" target="_blank">
-                  <img height={32} width={32} src="twitter.svg" alt="" />
-                </a>
-                <a className="ml-4 text-white" href="https://www.linkedin.com/in/pdc-finance" target="_blank">
-                  <img height={32} width={32} src="linkedin.svg" alt="" />
-                </a>
-                <a className="ml-4 text-white" href="https://github.com/PDC-Finance" target="_blank">
-                  <img height={36} width={36} src="github.svg" alt="" />
-                </a>
+                <Link href="https://m.youtube.com/channel/UCKLeOMLR1An2SDoOtCftmWA">
+                  <a className="text-gray-500" target="_blank">
+                    <Image height={32} width={32} src="/youtube.svg" alt="" />
+                  </a>
+                </Link>
+                <Link href="https://twitter.com/pdcfin">
+                  <a className="ml-4" target="_blank">
+                    <Image height={32} width={32} src="/twitter.svg" alt="" />
+                  </a>
+                </Link>
+                <Link href="https://www.linkedin.com/in/pdc-finance">
+                  <a className="ml-4 text-white" target="_blank">
+                    <Image height={32} width={32} src="/linkedin.svg" alt="" />
+                  </a>
+                </Link>
+                <Link href="https://github.com/PDC-Finance">
+                  <a className="ml-4 text-white" target="_blank">
+                    <Image height={36} width={36} src="/github.svg" alt="" />
+                  </a>
+                </Link>
               </span>
             </div>
           </div>

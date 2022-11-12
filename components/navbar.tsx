@@ -61,7 +61,7 @@ const NavBar = ({ isHomePage }: any) => {
             </ul>
           </div>
           <a className="btn btn-ghost normal-case text-xl">
-            <Image src="/logo_without_text_and_tagline.png" height={50} width={100} alt="pdc finance" />
+            <Image src="/white_logo_full.png" height={38} width={200} alt="pdc finance" />
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
