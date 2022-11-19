@@ -11,7 +11,7 @@ const Marketplace: NextPage = () => {
   const { chain, chains } = useNetwork();
 
   const getTransactions = async (address:string) => {
-    const url = `/api/NFTBalance?chainId=${chain?.id}&walletAddress=${address}&contractAddress=${process.env.NEXT_PUBLIC_EURO_FIAT_TOKEN_ADDRESS}`;
+    const url = `/api/NFTBalance?chainId=${chain?.id}&walletAddress=${address}`;
     const response = await axios.get(url);
     console.log(response)
     var list:any = []
@@ -42,6 +42,7 @@ const Marketplace: NextPage = () => {
           }
         }); */
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [address, isConnected]);
   
   

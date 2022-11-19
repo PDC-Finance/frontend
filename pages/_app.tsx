@@ -28,6 +28,25 @@ const bscMainnet: Chain = {
   },
   testnet: false,
 };
+const bscTestnet: Chain = {
+  id: 97,
+  name: "BNB Testnet",
+  network: "BSC Testnet",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Binance Chain Native Token (BNB)",
+    symbol: "tBNB",
+  },
+  rpcUrls: {
+    default: "https://data-seed-prebsc-1-s1.binance.org:8545",
+  },
+  blockExplorers: {
+    default: { name: "SnowTrace", url: "https://testnet.bscscan.com/" },
+  },
+  testnet: true,
+};
 
 const fantomMainnet: Chain = {
   id: 250,
@@ -49,7 +68,7 @@ const fantomMainnet: Chain = {
   testnet: false,
 };
 const { provider, chains, webSocketProvider } = configureChains(
-  [bscMainnet, fantomMainnet, chain.polygonMumbai],
+  [bscMainnet, fantomMainnet, chain.polygonMumbai, bscTestnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
@@ -69,7 +88,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { chain, chains } = useNetwork();
   var Moralis_Server_Url:any = '';
   var MORALIS_APP_ID:any = '';
-  if (chain && chain.id == 80001) {
+  if (chain && (chain.id == 80001 || chain.id == 97)) {
     Moralis_Server_Url = process.env.NEXT_PUBLIC_MORALIS_TESTNET_API_SERVER_URL;
     MORALIS_APP_ID = process.env.NEXT_PUBLIC_MORALIS_TESTNET_APP_ID;
   } else {

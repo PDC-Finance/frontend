@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useContractRead, useContractWrite, usePrepareContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
-import contractInterface from "../../abi/pdcFactory.json";
+import contractInterface from "../../abi/bnb_testnet/pdcFactory.json";
 import pdcContractInterface from "../../abi/pdc.json";
 
 const CreateBnbPdcContaract = ({ address, setIsAvailablePDC, fetchTokenBalancesFromMoralis, setTokenBalanceList, setPdcAccountAddress }: any) => {
   try {
     //console.log("process.env--------:  ", process.env.NEXT_PUBLIC_BINANCE_PDC_FACTORY_CONTRACT_ADDRESS);
     useContractRead({
-      addressOrName: "0x0190E2C4dB5452293733c010a72826900e26057c",
+      addressOrName: "0x5e3b8C3553ED57Cc90122A6e7E3b43315D6676ED",
       contractInterface: contractInterface,
       functionName: "pdcUserMapping",
       args: address,
@@ -34,7 +34,7 @@ const CreateBnbPdcContaract = ({ address, setIsAvailablePDC, fetchTokenBalancesF
   }
 
   const { config } = usePrepareContractWrite({
-    addressOrName: "0x0190E2C4dB5452293733c010a72826900e26057c",
+    addressOrName: "0x5e3b8C3553ED57Cc90122A6e7E3b43315D6676ED",
     contractInterface: contractInterface,
     functionName: "createPDCAccount",
   });
@@ -48,14 +48,14 @@ const CreateBnbPdcContaract = ({ address, setIsAvailablePDC, fetchTokenBalancesF
   if (isLoading) {
     setIsAvailablePDC(true);
     setTimeout(() => {
-      window.location.reload();
+      //window.location.reload();
     }, 5000);
   }
 
   return (
     <>
       <button disabled={!write} onClick={() => write?.()} className="bg-green-500 px-10 py-2 rounded-xl text-white font-bold hover:bg-green-700">
-        Create Mumbai PDC Contract
+        Create Bnb PDC Contract
       </button>
     </>
   );

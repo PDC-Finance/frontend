@@ -3,6 +3,7 @@ import { useMoralisQuery } from "react-moralis";
 import { NextPage } from "next/types";
 import Link from "next/link";
 import pdcContractInterface from "../abi/pdc.json";
+import bnbPdcContractInterface from "../abi/bnb_testnet/pdc.json";
 import ShowPdcList from "../components/showPdcList";
 import CreateMumbaiPDC from "../components/createMUMBAIPDC";
 import { fetchTokenBalancesFromMoralis } from "../utils/web3";
@@ -13,6 +14,7 @@ import CreateFantomPdc from '../components/fantom_chain/createFantomPdc';
 import CreateBnbPdcContract from '../components/bnb_chain/createBnbPdcContract';
 import CreateBnbPdc from '../components/bnb_chain/createBnbPdc';
 import Image from "next/image";
+import CreateBnbTestPDC from "../components/bnb_test_chain/createBnbTestPdc";
 
 const App = () => {
   const [tabState, setTabState] = useState("1");
@@ -26,7 +28,7 @@ const App = () => {
   const [nativeBalance, setNativeBalance] = useState("0");
   const [currentChain, setCurrentChain] = useState<any>(null);
   const { address, isConnected } = useAccount();
-  const [tableName, setTableName] = useState('');
+  const [tableName, setTableName] = useState("PDCCREATED_BNB_2");
 
   const [isAvailablePDC, setIsAvailablePDC] = useState(false);
   const [pdcList, setPdcList] = useState([]);
@@ -44,29 +46,11 @@ const App = () => {
         setTableName("PDCCREATED_BNB");
       }
   } */
-  useEffect(() => {
-    if (chain && chain.id && currentChain !== chain.id) {
-      setCurrentChain(chain.id);
-      if (chain && chain.id == 80001) {
-        setTableName("PDCCREATED_2");
-        fetchFromDB();
-      } else if (chain && chain.id == 250) {
-        setTableName("PDCCREATED_FTM");
-        fetchFromDB();
-      } else if (chain && chain.id == 56) {
-        setTableName("PDCCREATED_BNB");
-        fetchFromDB();
-      }
-      return;
-    }
-  }, [chain]
-    
-    );
 
   const dateTime = Math.floor(new Date(pdcDateTime).getTime() / 1000);
   const { config } = usePrepareContractWrite({
     addressOrName: pdcAccountAddress,
-    contractInterface: pdcContractInterface,
+    contractInterface: currentChain == 80001 ? pdcContractInterface : bnbPdcContractInterface,
     functionName: "withdraw",
     args: [selectedToken],
   });
@@ -80,12 +64,12 @@ const App = () => {
     console.log("isSuccess:  ", isSuccess);
   }
   console.log('table-name:::::::    ',tableName);
-  const { fetch } = useMoralisQuery('PDCCREATED_2', (query) => query.equalTo("owner", address?.toLowerCase()), [], { autoFetch: false });
+  const { fetch } = useMoralisQuery(tableName, (query) => query.equalTo("owner", address?.toLowerCase()), [], { autoFetch: false });
   const fetchFromDB = async () => {
     try {
       const results = await fetch();
       if (results) {
-        console.log('pdc-list:  ',JSON.parse(JSON.stringify(results)));
+        //console.log('pdc-list:  ',JSON.parse(JSON.stringify(results)));
         const data = JSON.parse(JSON.stringify(results));
         if (data && data.length > 0) {
           setPdcList([]);
@@ -107,7 +91,28 @@ const App = () => {
     } else {
       setIsConnected(false);
     }
-  }, [isConnected]);
+    if (chain && chain.id && currentChain !== chain.id) {
+      setCurrentChain(chain.id);
+      if (chain && chain.id == 80001) {
+        setTableName("PDCCREATED_2");
+        setSelectedToken("0x92D8AD8dEf363CEbdBEf14A428a23edF2Bfd7F64");
+        fetchFromDB();
+      } else if (chain && chain.id == 250) {
+        setTableName("PDCCREATED_FTM");
+        fetchFromDB();
+      } else if (chain && chain.id == 56) {
+        setTableName("PDCCREATED_BNB");
+        setSelectedToken("0x322182eee9Ec289F3E1B630Ce054d93a72b45ac0");
+        fetchFromDB();
+      } else if (chain && chain.id == 97) {
+        setTableName("PDCCREATED_BNB_2");
+        setSelectedToken("0x322182eee9Ec289F3E1B630Ce054d93a72b45ac0");
+        fetchFromDB();
+      }
+      return;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, chain, currentChain]);
 
   useBalance({
     addressOrName: pdcAccountAddress,
@@ -141,8 +146,7 @@ const App = () => {
           />
         </div>
       );
-    }
-    else if (currentChain == 250) {
+    } else if (currentChain == 250) {
       return (
         <>
           <div className="w-full h-[90vh] flex justify-center items-center">
@@ -156,12 +160,25 @@ const App = () => {
           </div>
         </>
       );
-    }
-    else if (currentChain == 80001) { 
+    } else if (currentChain == 80001) {
       return (
         <>
           <div className="w-full h-[90vh] flex justify-center items-center">
             <CreateMumbaiPdcContaract
+              address={address}
+              setIsAvailablePDC={setIsAvailablePDC}
+              fetchTokenBalancesFromMoralis={fetchTokenBalancesFromMoralis}
+              setTokenBalanceList={setTokenBalanceList}
+              setPdcAccountAddress={setPdcAccountAddress}
+            />
+          </div>
+        </>
+      );
+    } else if (currentChain == 97) {
+      return (
+        <>
+          <div className="w-full h-[90vh] flex justify-center items-center">
+            <CreateBnbPdcContract
               address={address}
               setIsAvailablePDC={setIsAvailablePDC}
               fetchTokenBalancesFromMoralis={fetchTokenBalancesFromMoralis}
@@ -179,7 +196,9 @@ const App = () => {
           <div className=" rounded-lg  p-5">
             <p>
               PDC smart contract address
-              <Link href={"https://mumbai.polygonscan.com/address/" + pdcAccountAddress}>
+              <Link
+                href={currentChain === 80001 ? "https://mumbai.polygonscan.com/address/" : "https://testnet.bscscan.com/address/" + pdcAccountAddress}
+              >
                 <a target="_blank">
                   <b> {pdcAccountAddress}</b>
                 </a>
@@ -188,9 +207,19 @@ const App = () => {
             <p>
               smart contract balances <small>( Add MATIC and Balace to the above 👆 contract using Metamask )</small>{" "}
             </p>
+            <small>
+              Deposit at least 5 LINK tokens to the above address. You can find LINK faucet{" "}
+              <Link href="https://faucets.chain.link/chapel">
+                <a className="text-blue-500" target="_blank">
+                  here
+                </a>
+              </Link>
+            </small>
             <div className="mt-5">
               <div className="my-5">
-                <p>MATIC : {parseFloat(nativeBalance)?.toPrecision(4)}</p>
+                <p>
+                  {currentChain === 80001 ? "MATIC" : currentChain === 250 ? "FTM" : "BNB"} : {parseFloat(nativeBalance)?.toPrecision(4)}
+                </p>
                 {tokenBalanceList.map(function (token: any, index) {
                   return (
                     <p key={index}>
@@ -242,7 +271,7 @@ const App = () => {
           <div className="tab1 flkex flex-col items-start w-5/12">
             {isCreatingPDC && (
               <div className="flex justify-center items-center w-5/12 text-black h-[30%] absolute rounded-xl bg-gray-300">
-                <img alt="loading" src="loading-state.gif" height={48} width={48} />
+                <Image alt="loading" src="loading-state.gif" height={48} width={48} />
                 <p className="font-bold text-xl">Creating PDC...</p>
               </div>
             )}
@@ -302,31 +331,43 @@ const App = () => {
                     <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
                   </>
                 ) : currentChain == 250 ? (
-                    <>
-                      <CreateFantomPdc />
-                      <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
-                    </>
-                  ) : currentChain == 80001 ? (
-                    <>
-                        <CreateMumbaiPDC
-                          pdcDateTime={pdcDateTime}
-                          pdcAccountAddress={pdcAccountAddress}
-                          selectedToken={selectedToken}
-                          recipientAddress={recipientAddress}
-                          pdcAmount={pdcAmount}
-                          setTabState={setTabState}
-                          setIsCreatingPDC={setIsCreatingPDC}
-                          fetchFromDB={fetchFromDB}
-                        />
-                        <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
-                    </>
-                ) : <>
-                      <p>Select network from dropdown</p>
-                    </>
-                
-                }
-                
-                
+                  <>
+                    <CreateFantomPdc />
+                    <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
+                  </>
+                ) : currentChain == 80001 ? (
+                  <>
+                    <CreateMumbaiPDC
+                      pdcDateTime={pdcDateTime}
+                      pdcAccountAddress={pdcAccountAddress}
+                      selectedToken={selectedToken}
+                      recipientAddress={recipientAddress}
+                      pdcAmount={pdcAmount}
+                      setTabState={setTabState}
+                      setIsCreatingPDC={setIsCreatingPDC}
+                      fetchFromDB={fetchFromDB}
+                    />
+                    <Image height={32} width={48} src="/geloato_logo1.svg" alt="logo" />
+                  </>
+                ) : currentChain == 97 ? (
+                  <>
+                   <CreateMumbaiPDC
+                      pdcDateTime={pdcDateTime}
+                      pdcAccountAddress={pdcAccountAddress}
+                      selectedToken={selectedToken}
+                      recipientAddress={recipientAddress}
+                      pdcAmount={pdcAmount}
+                      setTabState={setTabState}
+                      setIsCreatingPDC={setIsCreatingPDC}
+                      fetchFromDB={fetchFromDB}
+                    />
+                    <small>Powered by chainlink</small>
+                  </>
+                ) : (
+                  <>
+                    <p>Select another network from dropdown</p>
+                  </>
+                )}
               </div>
             </div>
           </div>

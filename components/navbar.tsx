@@ -35,11 +35,11 @@ const NavBar = ({ isHomePage }: any) => {
                   <a>Home</a>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="about">
                   <a>About</a>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="https://pdc-finance.gitbook.io/pdc-finance/">
                   <a target="_blank">Docs</a>
@@ -60,8 +60,11 @@ const NavBar = ({ isHomePage }: any) => {
               )}
             </ul>
           </div>
-          <a className="btn btn-ghost normal-case text-xl">
-            <Image src="/white_logo_full.png" height={38} width={200} alt="pdc finance" />
+          <a className="btn btn-ghost normal-case text-xl md:block hidden">
+            <Image src="/logo_transparent.png" height={38} width={200} alt="pdc finance" />
+          </a>
+          <a className="btn btn-ghost flex items-center normal-case text-xl md:hidden block">
+            <Image src="/logo_transparent.png" height={24} width={80} alt="pdc finance" />
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
@@ -72,11 +75,11 @@ const NavBar = ({ isHomePage }: any) => {
                 {/* <p>{{ status}}</p> */}
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="about">
                 <a>About</a>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link href="https://pdc-finance.gitbook.io/pdc-finance/">
                 <a target="_blank">Docs</a>
@@ -99,7 +102,9 @@ const NavBar = ({ isHomePage }: any) => {
         <div className="navbar-end">
           {isHomePage ? (
             <Link href="/app">
-              <a className="btn">Enter App</a>
+              <a className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                Enter App
+              </a>
             </Link>
           ) : (
             <ConnectButton />

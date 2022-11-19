@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import pdcContractInterface from "../../abi/pdcFactory.json";
+import pdcContractInterface from "../../abi/bnb_testnet/pdcFactory.json";
 
 const CreateBnbPDC = ({
   pdcDateTime,
