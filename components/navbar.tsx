@@ -46,7 +46,7 @@ const NavBar = ({ isHomePage }: any) => {
                 </Link>
               </li>
               <li>
-                <Link href="https://pdc-finance.notion.site/PDC-Finance-80d1a402a5c2414484c2d5bf4c8a3269">
+                <Link href="https://blockpeer.notion.site/blockpeer/PDC-Finance-80d1a402a5c2414484c2d5bf4c8a3269">
                   <a target="_blank">Whitepaper</a>
                 </Link>
               </li>
@@ -86,7 +86,7 @@ const NavBar = ({ isHomePage }: any) => {
               </Link>
             </li>
             <li>
-              <Link href="https://pdc-finance.notion.site/PDC-Finance-80d1a402a5c2414484c2d5bf4c8a3269">
+              <Link href="https://blockpeer.notion.site/blockpeer/PDC-Finance-80d1a402a5c2414484c2d5bf4c8a3269">
                 <a target="_blank">Whitepaper</a>
               </Link>
             </li>
