@@ -1,7 +1,7 @@
 var axios = require('axios');
 var qs = require('qs');
 
-const fetchPdcList = async (tableName, ownerAddress) => {
+const fetchPdcList = async (tableName:string, ownerAddress:string) => {
   console.log("fetching pdc list....", ownerAddress);
   var data = qs.stringify({
     where: `{"owner":"${ownerAddress}"}`,
@@ -21,12 +21,12 @@ const fetchPdcList = async (tableName, ownerAddress) => {
 
     //console.log("data : ", response.data.results);
     return response.data.results;
-  } catch (error) {
+  } catch (error:any) {
     console.log('error: ',error);
-    return error.response;
+    return error?.response;
   }
 };
-const handler = async (req, res) => {
+const handler = async (req:any, res:any) => {
   if (req.method == "POST") {
     res.status(200).json("not allowed");
   } else {

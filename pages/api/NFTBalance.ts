@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const fetchTransactions = async (reqBody) => {
+const fetchTransactions = async (reqBody:any) => {
   const url = `https://api.covalenthq.com/v1/${reqBody.chainId}/address/${reqBody.walletAddress}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${process.env.COVALENT_API_KEY}`;
   try {
     const response = await axios.get(url);
@@ -9,7 +9,7 @@ const fetchTransactions = async (reqBody) => {
     return error;
   }
 };
-const handler = async (req, res) => {
+const handler = async (req:any, res:any) => {
   if (req.method == "POST") {
     res.status(200).json("not allowed");
   } else {

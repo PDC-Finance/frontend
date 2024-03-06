@@ -9,10 +9,10 @@ import CreateMumbaiPDC from "../components/createMUMBAIPDC";
 import { fetchTokenBalancesFromMoralis } from "../utils/web3";
 import CreateMumbaiPdcContaract from "../components/createMumbaiPdcContract";
 import { useAccount, useBalance, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
-import CreateFantomPdcContract from '../components/fantom_chain/createFantomPdcContract';
-import CreateFantomPdc from '../components/fantom_chain/createFantomPdc';
-import CreateBnbPdcContract from '../components/bnb_chain/createBnbPdcContract';
-import CreateBnbPdc from '../components/bnb_chain/createBnbPdc';
+import CreateFantomPdcContract from '../components/Fantom_Chain/createFantomPdcContract';
+import CreateFantomPdc from "../components/Fantom_Chain/createFANTOMPDC";
+import CreateBnbPdcContract from '../components/bnb_test_chain/createBnbTestPdcContract';
+import CreateBnbPdc from '../components/BNB_Chain/createBNBPDC';
 import Image from "next/image";
 import CreateBnbTestPDC from "../components/bnb_test_chain/createBnbTestPdc";
 
